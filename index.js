@@ -4,7 +4,7 @@ var port = process.env.PORT || 8080;
 
 var morgan = require('morgan');
 
-app.use(morgan(':date[iso] :remote-addr - :url'));
+app.use(morgan(':date[iso] - :url'));
 
 app.use('/', function(req, res){
 	res.send('yo');
