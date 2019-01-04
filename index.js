@@ -1,24 +1,14 @@
-const express = require('express')
-const logger = require('morgan')
-//const port = process.env.PORT || 8000
-var fs = require('fs')
-var path = require('path')
+var express = require('express');
+var app = express();
+var port = process.env.PORT || 8080;
 
-logger.token('id', function getId (req) {
-  return req.id
-})
+var morgan = require('morgan');
 
-var app = express()
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
+app.use(morgan(':date[iso] :remote-addr - :url'));
 
-app.use(assignId)
-app.use(logger(':date[iso] :id :remote-addr :method :url :status :res[content-length] - :response-time ms',{stream: accessLogStream}));
+app.use('/', function(req, res){
+	res.send('yo');
+});
 
-app.get('/', function (req, res) {
-  res.send('yo')
-})
-
-function assignId (req, res, next) {
-  req.id = uuid.v4()
-  next()
-}
+app.listen(port);
+console.log('Server running on port: ' + port);
