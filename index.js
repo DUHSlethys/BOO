@@ -5,7 +5,7 @@ var fs = require('fs');
 var morgan = require('morgan');
 var path = require('path');
 
-var stream = fs.createWriteStream(path.join('duhslethys.000webhostapp.com/access.log'),{flags: 'a'});
+var stream = fs.createWriteStream(path.join(__dirname, 'access.log'),{flags: 'a'});
 
 app.use(morgan(':date[iso] - :url', {stream: stream}));
 
