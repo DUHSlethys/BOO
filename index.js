@@ -1,15 +1,22 @@
 const express = require('express');
-const morgan = require('morgan');
+const logger = require('morgan');
 const app = express();
 var port = process.env.PORT || 8080;
+var fs = require('fs');
 
-app.listen(port, function() {
-	console.log("app runs on ip:"+port);
-});
+//app.listen(port, function() {
+//	console.log("app runs on ip:"+port);
+//});
 
-//app.enable("trust proxy");
-// use combined preset, see https://github.com/expressjs/morgan#combined
-//app.use(morgan('date[ISO] :remote-addr :method :url :status'));
+app.enable("trust proxy");
+
+var accessLogStream = fs.createWriteStream('./access.log', {flags: 'a'});
+app.use(logger({format:':date[iso] :remote-addr :method :url :status :res[content-length] - :response-time ms',stream: {
+	write: function(str){
+		accessLogStream.write(str);
+		console.log(str);
+	}
+}}));
 
 app.get('/', (req, res)  => {
   res.send('Hello from Express.js server!')
