@@ -1,22 +1,27 @@
 const express = require('express');
 const logger = require('morgan');
-var port = process.env.PORT || 8080;
+const port = process.env.PORT || 8000;
 var fs = require('fs');
 var path = require('path');
 
-var app = express();
-//app.listen(port, function() {
-//	console.log("app runs on ip:"+port);
-//});
-
-app.enable("trust proxy");
-
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'});
-app.use(logger(':date[iso] :remote-addr :method :url :status :res[content-length] - :response-time ms',{stream: accessLogStream}));
-
-app.get('/', (req, res) => {
-  res.send('Hello from Express.js server!')
+logger.token('id', function getId (req) {
+	return req.id;
 });
+
+var app = express();
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'});
+
+app.use(function assignId (req, res, next) {
+	req.id = uuid.v4();
+});
+
+app.use(logger(':date[iso] :id :remote-addr :method :url :status :res[content-length] - :response-time ms',{stream: accessLogStream}));
+
+app.get('/', function(req, res) {
+  res.send('Hello from Express.js server!');
+});
+
+
 
 //var https = require('https');
 //var server = https.createServer(app).listen(config.port, function() {
@@ -31,3 +36,8 @@ app.get('/', (req, res) => {
 //app.listen(PORT, () => {
 //  console.log(`Example app listening on port ${PORT}!`);
 //});
+//app.listen(port, function() {
+//	console.log("app runs on ip:"+port);
+//});
+
+//app.enable("trust proxy");
