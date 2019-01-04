@@ -1,13 +1,30 @@
+var https = require('https');
 var http = require('http');
-var port = 12311
+var fs = require('fs');
 
-http.createServer(function (req, res) {
+const options = {
+                key: fs.readFileSync(__dirname+'/alt1-key.pem'),
+                cert: fs.readFileSync(__dirname+'/alt1-cert.pem')
+};
 
-    console.log("Incomming request from " + req.url);
+https.createServer(options, function(req, res){
+                console.log('req made: '+req.url);
+                res.setHeader('Access-Control-Allow-Origin', '*');
+                res.setHeader('Access-Control-Request-Method', '*');
+                res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+                res.writeHeader(200,{'Content-Type': 'text/plain'});
+                var read = fs.createReadStream(__dirname+'/Apps/stream.czml', 'utf8');
+                read.pipe(res);
+}).listen(443);
+ 
+var server = http.createServer(function(req, res){
+                console.log('req made: '+req.url);
+                res.setHeader('Access-Control-Allow-Origin', '*');
+                res.setHeader('Access-Control-Request-Method', '*');
+                res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+                res.writeHeader(200,{'Content-Type': 'text/plain'});
+                var read = fs.createReadStream(__dirname+'/Apps/stream.czml', 'utf8');
+                read.pipe(res);
+});
 
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end("test string");
-
-
-}).listen(port);
-console.log("Listening on " +  port);
+server.listen(8000);
